@@ -4,7 +4,7 @@
             <div class="card card-defualt">
                 <div class="card-header">Messages</div>
                 <div class="card-body p-0">
-                    <ul class="list-unstyled" style="height: 300px; overflow-y:scroll">
+                    <ul class="list-unstyled" style="height: 300px; overflow-y:scroll"  v-chat-scroll>
                         <li class="p-2" v-for="(item, index) in messages" :key="index">
                             <strong>{{ item.user.name }}</strong>
                             {{ item.message }}
@@ -13,13 +13,14 @@
                 </div>
 
                 <input
+                    @keydown="sendTypingEvent"
                     @keyup.enter="sendMessage"
                     v-model="newMessage"
                     type="text" 
                     class="form-control" 
                     name="message" placeholder="Enter your message...">
             </div>
-            <span class="text-muted">user is typing...</span>
+            <span class="text-muted" v-if="activeUser">{{ activeUser.name }} is typing...</span>
         </div>
         <div class="col-md-4">
             <div class="card card-defualt">
@@ -37,6 +38,7 @@
 </template>
 
 <script>
+import { setTimeout, clearTimeout } from 'timers';
     export default {
         props: ['user'],
         created() {
@@ -56,13 +58,26 @@
                     // console.log(e)
                     this.messages.push(e.message)
                 })
+                .listenForWhisper('typing', user => {
+                    this.activeUser = user
 
+                    if (this.typingTimer) {
+                        clearTimeout(this.typingTimer)
+                    }
+
+                    this.typingTimer = setTimeout(() => {
+                        this.activeUser = false
+                    }, 500)
+
+                })
         },
         data() {
             return {
                 users: [],
                 messages: [],
-                newMessage: ''
+                newMessage: '',
+                activeUser: false,
+                typingTimer: false
             }
         },
         methods: {
@@ -82,6 +97,10 @@
 
                 this.newMessage = ''
 
+            },
+            sendTypingEvent() {
+                Echo.join('chat')
+                    .whisper('typing', this.user)
             },
         },
     }
