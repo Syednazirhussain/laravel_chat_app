@@ -23,3 +23,5 @@ Route::post('/messages', 'ChatsController@sendMessage');
 
 Auth::routes();
 Route::get('/home', 'HomeController@index')->name('home');
+
+Route::get('/roles', 'RolesController@index')->name('roles.index');
