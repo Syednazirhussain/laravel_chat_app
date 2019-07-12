@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Roles;
+use Session;
 use Illuminate\Http\Request;
 
 class RolesController extends Controller
@@ -29,7 +30,7 @@ class RolesController extends Controller
      */
     public function create()
     {
-        //
+        return view('roles.create');
     }
 
     /**
@@ -40,7 +41,16 @@ class RolesController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'name'  => 'required|min:3|max:30'
+        ]);
+
+        $role = new Roles;
+        $role->name = $request->input('name');
+        $role->save();
+
+        Session::flash('success', 'Role added successfully');
+        return redirect()->route('roles.index');
     }
 
     /**
@@ -51,7 +61,14 @@ class RolesController extends Controller
      */
     public function show($id)
     {
-        //
+        $role = Roles::findOrFail($id);
+        if (empty($role)) {
+
+            Session::flash('error', 'Roles cannot found!');
+            return redirect()->route('roles.index');
+        }
+
+        return view('roles.show', compact('role'));
     }
 
     /**
@@ -62,7 +79,14 @@ class RolesController extends Controller
      */
     public function edit($id)
     {
-        //
+        $role = Roles::findOrFail($id);
+        if (empty($role)) {
+
+            Session::flash('error', 'Role cannot found.');
+            return redirect()->route('roles.index');
+        }
+
+        return view('roles.edit', compact('role'));
     }
 
     /**
@@ -74,7 +98,23 @@ class RolesController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $request->validate([
+            'name'  => 'required|min:3|max:30'
+        ]);
+
+        $role = Roles::findOrFail($id);
+        if (empty($role)) {
+
+            Session::flash('error', 'Role cannot found.');
+            return redirect()->route('roles.index');
+        }
+
+        $role->update([
+            'name'  => $request->input('name')
+        ]);
+        
+        Session::flash('success', 'Role updated successfully');
+        return redirect()->route('roles.index');
     }
 
     /**
@@ -85,6 +125,16 @@ class RolesController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $role = Roles::findOrFail($id);
+        if (empty($role)) {
+
+            Session::flash('error', 'Roles cannot found!');
+            return redirect()->route('roles.index');
+        }
+
+        $role->delete();
+
+        Session::flash('success', 'Role delete successfully');
+        return redirect()->route('roles.index');
     }
 }
