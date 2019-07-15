@@ -42,4 +42,12 @@ class User extends Authenticatable
         return $this->hasMany(Message::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+    **/
+    public function friends()
+    {
+        return $this->hasMany(\App\Friend::class, 'friend_id', 'id');
+    }
+
 }

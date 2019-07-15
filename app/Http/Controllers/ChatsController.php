@@ -15,7 +15,7 @@ class ChatsController extends Controller
 	}
 
 	public function index() {
-
+		
 		return view('chats');
 	}
 

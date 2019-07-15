@@ -10,6 +10,7 @@
                     <ul class="list">
                         <li class="list-item"><a href="{{ route('roles.index') }}">Roles</a></li>
                         <li class="list-item"><a href="{{ route('chats') }}">Chats</a></li>
+                        <li class="list-item"><a href="{{ route('peoples.index') }}">Peoples</a></li>
                     </ul>
 
 
